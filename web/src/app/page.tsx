@@ -20,6 +20,12 @@ export default function Home() {
   // Configurações do OAuth
   const redirectUri = typeof window !== 'undefined' ? window.location.origin : (process.env.NEXT_PUBLIC_LOCAL_URL || "http://localhost:3000");
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+
+  console.log("NEXT_PUBLIC_GOOGLE_CLIENT_ID:", process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
+  console.log("clientId:", clientId);
+  console.log("redirectUri:", redirectUri);
+  console.log("Teste console.log funcionando!");
+
   const list = ["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"];
   const scopes = list.join(" ");
   const params = new URLSearchParams({
