@@ -21,6 +21,8 @@ export default function Home() {
   const redirectUri = process.env.NEXT_PUBLIC_LOCAL_URL || "http://localhost:3000";
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  console.log("versão: 1.0.0");
   
   // Debug das variáveis de ambiente
   useEffect(() => {

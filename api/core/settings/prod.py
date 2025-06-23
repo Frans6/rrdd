@@ -69,8 +69,26 @@ MIDDLEWARE.insert(2, "whitenoise.middleware.WhiteNoiseMiddleware")
 # Configuração de banco de dados para produção
 DATABASE_URL = config("DATABASE_URL", default=None)
 
-if DATABASE_URL:
-    print("✅ Usando DATABASE_URL configurada")
+if DATABASE_URL and '/cloudsql/' in DATABASE_URL:
+    print("🔗 Configurando Cloud SQL Proxy")
+    # Configuração manual para Cloud SQL
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'postgres',
+            'USER': 'derivada',
+            'PASSWORD': 'derivada',
+            'HOST': '/cloudsql/bold-artifact-463813-e9:us-central1:admin',
+            'PORT': '',
+            'OPTIONS': {
+                'sslmode': 'disable',  # SSL não é necessário com Cloud SQL Proxy
+            },
+            'CONN_MAX_AGE': 600,
+            'CONN_HEALTH_CHECKS': True,
+        }
+    }
+elif DATABASE_URL:
+    print("🌐 Usando DATABASE_URL padrão")
     DATABASES = {
         "default": dj_database_url.config(
             default=DATABASE_URL,
@@ -79,17 +97,6 @@ if DATABASE_URL:
             ssl_require=True,
         ),
     }
-    # Configurações específicas para Cloud SQL
-    if '/cloudsql/' in DATABASE_URL:
-        print("🔗 Detectado Cloud SQL Proxy")
-        DATABASES['default']['OPTIONS'] = {
-            'sslmode': 'require',
-        }
-    else:
-        print("🌐 Detectado conexão IP público")
-        DATABASES['default']['OPTIONS'] = {
-            'sslmode': 'require',
-        }
 else:
     # Fallback para SQLite se DATABASE_URL não estiver configurada
     print("⚠️ WARNING: DATABASE_URL não configurada, usando SQLite como fallback")
