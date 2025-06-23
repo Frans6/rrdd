@@ -4,9 +4,10 @@ import dj_database_url
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
+    ".run.app",
     "rrdd-519104831129.us-central1.run.app",
 ]
 
