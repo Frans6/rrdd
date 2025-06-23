@@ -15,6 +15,7 @@ RUN pip install -r /usr/src/api/requirements.txt
 
 COPY api /usr/src/api/
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi:application"]
+# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi:application"]
 # código para rodar o entrypoint
-# ENTRYPOINT [ "/usr/src/api/config/entrypoint.sh" ]
+ENTRYPOINT [ "/usr/src/api/config/entrypoint.sh" ]
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi:application"]
