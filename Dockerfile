@@ -5,6 +5,7 @@ WORKDIR /usr/src/api
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV DJANGO_SECRET_KEY=django-insecure-change-me-in-production
+ENV DJANGO_SETTINGS_MODULE=core.settings.prod
 
 COPY api/requirements.txt /usr/src/api/requirements.txt
 

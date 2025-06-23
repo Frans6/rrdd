@@ -8,6 +8,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     ".herokuapp.com",
+    ".run.app",
+    "rrdd-519104831129.us-central1.run.app",
 ]
 
 
