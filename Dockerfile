@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 COPY api/requirements.txt /usr/src/api/requirements.txt
 
 # dependências do postres
-RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev
+RUN apk update && apk add postgresql-dev gcc python3-dev musl-dev netcat-openbsd
 
 RUN pip install --upgrade pip
 RUN pip install -r /usr/src/api/requirements.txt
