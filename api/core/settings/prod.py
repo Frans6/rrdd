@@ -4,12 +4,10 @@ import dj_database_url
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     ".herokuapp.com",
-    ".run.app",
-    "rrdd-519104831129.us-central1.run.app",
 ]
 
 
@@ -17,38 +15,10 @@ ALLOWED_HOSTS = [
 # https://github.com/adamchainz/django-cors-headers
 
 CORS_ALLOWED_ORIGINS = [
-    "https://rei-da-derivada.vercel.app",
-    "https://rrdd-front-519104831129.us-central1.run.app",  # Adicionar esta linha
-]
-
-# Adicionar CSRF_TRUSTED_ORIGINS para permitir requisições POST
-CSRF_TRUSTED_ORIGINS = [
-    "https://rei-da-derivada.vercel.app",
     "https://rrdd-front-519104831129.us-central1.run.app",
 ]
-
-# Adicionar também estas configurações CORS:
-CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-]
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
 # CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 
 # SSL Redirect
