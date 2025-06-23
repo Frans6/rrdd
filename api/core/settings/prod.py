@@ -4,7 +4,7 @@ import dj_database_url
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = [
     ".run.app",
@@ -18,7 +18,8 @@ ALLOWED_HOSTS = [
 CORS_ALLOWED_ORIGINS = [
     "https://rrdd-front-519104831129.us-central1.run.app",
 ]
-# CORS_ALLOW_ALL_ORIGINS = True  # Desabilitado - usando lista específica
+
+CORS_ALLOW_ALL_ORIGINS = True  # Temporariamente para debug
 CORS_ALLOW_CREDENTIALS = True
 
 # Configurações CORS adicionais para resolver problemas de preflight
@@ -46,16 +47,9 @@ CORS_ALLOW_METHODS = [
 # Configurações para preflight requests
 CORS_PREFLIGHT_MAX_AGE = 86400
 
-# Configurações adicionais para resolver problemas de CORS
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://rrdd-front-.*\.run\.app$",
-]
-
-# Permitir cookies em requisições cross-origin
-CORS_EXPOSE_HEADERS = ['Content-Type', 'X-CSRFToken']
-
 
 # SSL Redirect
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = True
 
@@ -64,7 +58,8 @@ SECURE_SSL_REDIRECT = True
 
 INSTALLED_APPS.insert(0, "whitenoise.runserver_nostatic")
 
-MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")
+# Inserir WhiteNoise depois do CORS middleware
+MIDDLEWARE.insert(2, "whitenoise.middleware.WhiteNoiseMiddleware")
 
 
 # Database
@@ -90,7 +85,7 @@ STORAGES = {
 # https://whitenoise.readthedocs.io/en/latest/django.html#WHITENOISE_KEEP_ONLY_HASHED_FILES
 WHITENOISE_KEEP_ONLY_HASHED_FILES = True
 
-# Configurações de logging para debug
+# Logging para debug de CORS
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -112,11 +107,6 @@ LOGGING = {
         'level': 'INFO',
     },
     'loggers': {
-        'django': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': False,
-        },
         'corsheaders': {
             'handlers': ['console'],
             'level': 'DEBUG',
