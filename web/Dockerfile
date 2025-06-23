@@ -15,8 +15,11 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Environment variables
+# Environment variables - Build time
 ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID="519104831129-dha282mn2g46pj5825n1kp90kofkl89a.apps.googleusercontent.com"
+ENV NEXT_PUBLIC_API_URL="https://rrdd-519104831129.us-central1.run.app"
+ENV NEXT_PUBLIC_LOCAL_URL="https://rrdd-front-519104831129.us-central1.run.app"
 
 RUN npm run build
 
