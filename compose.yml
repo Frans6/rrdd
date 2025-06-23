@@ -1,0 +1,44 @@
+services:
+  db:
+    image: postgres:16
+    container_name: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ./api/.env
+    ports:
+      - 5432:5432
+
+  backend:
+    restart: unless-stopped
+    container_name: api-django
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./api:/usr/src/api
+    env_file:
+      - ./api/.env
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+
+  frontend:
+    restart: unless-stopped
+    container_name: web-nextjs
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile.web
+    command: npm run dev
+    volumes:
+      - ./web:/usr/src/web
+      - /usr/src/web/node_modules
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
