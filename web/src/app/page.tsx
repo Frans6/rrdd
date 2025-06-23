@@ -20,6 +20,17 @@ export default function Home() {
   // Configurações do OAuth
   const redirectUri = process.env.NEXT_PUBLIC_LOCAL_URL || "http://localhost:3000";
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+  
+  // Debug das variáveis de ambiente
+  useEffect(() => {
+    console.log("Environment variables:", {
+      redirectUri,
+      clientId: clientId ? "Set" : "Not set",
+      apiUrl: apiUrl ? "Set" : "Not set"
+    });
+  }, []);
+  
   const list = ["https://www.googleapis.com/auth/userinfo.profile", "https://www.googleapis.com/auth/userinfo.email"];
   const scopes = list.join(" ");
   const params = new URLSearchParams({
@@ -48,8 +59,18 @@ export default function Home() {
 
   // Lidar com token de autenticação
   useEffect(() => {
-    let token = new URLSearchParams(window.location.hash).get("access_token");
+    const hash = window.location.hash;
+    console.log("Current hash:", hash);
+    
+    let token = null;
+    if (hash) {
+      const hashParams = new URLSearchParams(hash.substring(1));
+      token = hashParams.get("access_token");
+      console.log("Token found in hash:", token ? "Yes" : "No");
+    }
+    
     if (token) {
+      console.log("Processing Google authentication...");
       // Ativar o estado de processamento de login
       setIsProcessingLogin(true);
       
@@ -57,20 +78,40 @@ export default function Home() {
       myHeaders.append("Content-Type", "application/json");
       myHeaders.append("Accept", "application/json");
 
-      fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/register/google/`, {
+      fetch(`${apiUrl}/users/register/google/`, {
         method: "POST",
         headers: myHeaders,
         credentials: "include",
         body: JSON.stringify({
           access_token: token,
         }),
-      }).then((res) => {
+      }).then(async (res) => {
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error(`Error ${res.status}: ${errorText}`);
+          throw new Error(`HTTP ${res.status}: ${errorText}`);
+        }
+        
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          const text = await res.text();
+          console.error("Response is not JSON:", text);
+          throw new Error("Invalid response format");
+        }
+        
         return res.json();
       }).then((data) => {
-        setUser(data);
-        router.push("/home");
+        if (data && data.id) {
+          setUser(data);
+          router.push("/home");
+        } else {
+          console.error("Invalid user data received:", data);
+          setIsProcessingLogin(false);
+        }
       }).catch((err) => {
-        console.error(err);
+        console.error("Authentication error:", err);
+        // Limpar o token da URL em caso de erro
+        window.history.replaceState({}, document.title, window.location.pathname);
         // Desativar o estado de processamento em caso de erro
         setIsProcessingLogin(false);
       });

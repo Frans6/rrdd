@@ -6,7 +6,7 @@ const withPWA = withPWAInit({
     register: true,
     reloadOnOnline: true,
     fallbacks: {
-        document: "src/app/~offline/page.tsx",
+        document: "/~offline",
     },
     cacheOnFrontEndNav:true,
 });
