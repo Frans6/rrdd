@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path, re_path
+from django.http import JsonResponse
 from .views.views_event import EventView, ResultsView, PublishFinalResults, PublishImortalsResults
 from .views.views_staff import StaffView, AddStaffManager, AddStaffMembers, AddSingleStaff, DeleteAllStaffs
 from .views.views_players import PlayersView, GetPlayerResults, AddPlayersExcel, AddSinglePlayer, DeleteAllPlayers, GetNotImortalPlayers, ExportPlayersView
@@ -8,7 +9,18 @@ from .views.views_sumulas import SumulasView, ActiveSumulaView, FinishedSumulaVi
 app_name = 'api'
 
 
+def health_check(request):
+    """Endpoint de health check para verificar se o backend está funcionando"""
+    return JsonResponse({
+        'status': 'ok',
+        'message': 'Backend está funcionando corretamente'
+    })
+
+
 urlpatterns = [
+    # Health check
+    path('health/', health_check, name='health'),
+
     # Rotas de evento e token
     #     path('token/', TokenView.as_view(), name='token'),
     path('event/', EventView.as_view(), name='event'),

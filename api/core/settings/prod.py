@@ -1,6 +1,7 @@
 from .base import *
 
 import dj_database_url
+from decouple import config
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
@@ -65,13 +66,39 @@ MIDDLEWARE.insert(2, "whitenoise.middleware.WhiteNoiseMiddleware")
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    "default": dj_database_url.config(
-        conn_max_age=600,
-        conn_health_checks=True,
-        ssl_require=True,
-    ),
-}
+# Configuração de banco de dados para produção
+DATABASE_URL = config("DATABASE_URL", default=None)
+
+if DATABASE_URL:
+    print("✅ Usando DATABASE_URL configurada")
+    DATABASES = {
+        "default": dj_database_url.config(
+            default=DATABASE_URL,
+            conn_max_age=600,
+            conn_health_checks=True,
+            ssl_require=True,
+        ),
+    }
+    # Configurações específicas para Cloud SQL
+    if '/cloudsql/' in DATABASE_URL:
+        print("🔗 Detectado Cloud SQL Proxy")
+        DATABASES['default']['OPTIONS'] = {
+            'sslmode': 'require',
+        }
+    else:
+        print("🌐 Detectado conexão IP público")
+        DATABASES['default']['OPTIONS'] = {
+            'sslmode': 'require',
+        }
+else:
+    # Fallback para SQLite se DATABASE_URL não estiver configurada
+    print("⚠️ WARNING: DATABASE_URL não configurada, usando SQLite como fallback")
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 STORAGES = {
     # Enable WhiteNoise's GZip and Brotli compression of static assets:
