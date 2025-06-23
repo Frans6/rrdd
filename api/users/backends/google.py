@@ -22,7 +22,9 @@ class GoogleOAuth2:
             response.status_code = status.HTTP_400_BAD_REQUEST
             response.headers = {'Content-Type': 'application/json'}
 
-            if access_token != config('GOOGLE_OAUTH2_MOCK_TOKEN'):
+            # CORRIGIR: Adicionar valor padrão para evitar o erro
+            mock_token = config('GOOGLE_OAUTH2_MOCK_TOKEN', default='')
+            if access_token != mock_token:
                 response = requests.get(user_info_url, params=params)
             else:
                 response._content = b'''{
