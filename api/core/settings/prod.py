@@ -7,7 +7,7 @@ import dj_database_url
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    ".herokuapp.com",
+    "rrdd-519104831129.us-central1.run.app",
 ]
 
 
