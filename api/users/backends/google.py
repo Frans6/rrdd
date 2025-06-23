@@ -1,8 +1,5 @@
 import requests
 from users.models import User
-from decouple import config
-from requests import Response
-from rest_framework import status
 from django.db import transaction, IntegrityError
 
 
@@ -18,20 +15,7 @@ class GoogleOAuth2:
         params = {'access_token': access_token}
 
         try:
-            response = Response()
-            response.status_code = status.HTTP_400_BAD_REQUEST
-            response.headers = {'Content-Type': 'application/json'}
-
-            if access_token != config('GOOGLE_OAUTH2_MOCK_TOKEN'):
-                response = requests.get(user_info_url, params=params)
-            else:
-                response._content = b'''{
-                    "given_name": "given_name",
-                    "family_name": "family_name",
-                    "picture": "https://photo.aqui.com",
-                    "email": "user@email.com"
-                }'''
-                response.status_code = status.HTTP_200_OK
+            response = requests.get(user_info_url, params=params)
 
             if response.status_code == 200:
                 user_data = response.json()

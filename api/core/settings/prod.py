@@ -4,7 +4,7 @@ import dj_database_url
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
     ".herokuapp.com",
@@ -19,6 +19,12 @@ ALLOWED_HOSTS = [
 CORS_ALLOWED_ORIGINS = [
     "https://rei-da-derivada.vercel.app",
     "https://rrdd-front-519104831129.us-central1.run.app",  # Adicionar esta linha
+]
+
+# Adicionar CSRF_TRUSTED_ORIGINS para permitir requisições POST
+CSRF_TRUSTED_ORIGINS = [
+    "https://rei-da-derivada.vercel.app",
+    "https://rrdd-front-519104831129.us-central1.run.app",
 ]
 
 # Adicionar também estas configurações CORS:
