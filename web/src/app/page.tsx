@@ -103,7 +103,7 @@ export default function Home() {
         
         return res.json();
       }).then((data) => {
-        if (data && data.id) {
+        if (data && (data.access || data.email)) {
           setUser(data);
           router.push("/home");
         } else {
