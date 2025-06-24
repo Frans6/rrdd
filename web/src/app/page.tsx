@@ -22,7 +22,7 @@ export default function Home() {
   const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "";
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-  console.log("versão: 1.0.0");
+  console.log("versão: 1.1.0");
   
   // Debug das variáveis de ambiente
   useEffect(() => {

@@ -25,6 +25,7 @@ const ActiveEventsComponent = () => {
 
   useEffect(() => {
     if (user.all_events) {
+      console.log('user.all_events:', user.all_events); // <-- Adicionado para debug
       // Filtrar apenas eventos ativos do usuário
       const active = user.all_events
         .filter(event => event.event && event.event.active === true)
@@ -38,7 +39,7 @@ const ActiveEventsComponent = () => {
           originalRole: event.role, // Mantém o papel original sem tradução
           originalEvent: event // Mantém a referência ao evento original
         }));
-      
+      console.log('activeEvents filtrados:', active); // <-- Adicionado para debug
       setActiveEvents(active);
     }
   }, [user.all_events]);
