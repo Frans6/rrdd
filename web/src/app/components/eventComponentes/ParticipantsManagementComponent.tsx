@@ -114,6 +114,10 @@ const ParticipantsManagementComponent = forwardRef<ParticipantsManagementRefType
   const [importModalVisible, setImportModalVisible] = useState<boolean>(false);
   const [importModalType, setImportModalType] = useState<'player' | 'staff'>('player');
   
+  // Estados para o formulário de staff individual
+  const [addStaffLoading, setAddStaffLoading] = useState<boolean>(false);
+  const [staffForm] = Form.useForm();
+  
   const { user } = useContext(UserContext);
   const currentId = usePathname().split("/")[1];
 
@@ -334,6 +338,45 @@ const ParticipantsManagementComponent = forwardRef<ParticipantsManagementRefType
       setAddPlayerLoading(false);
     }
   };
+
+  // Adição de staff individual
+const handleAddStaffSubmit = async (values: any) => {
+  setAddStaffLoading(true);
+  try {
+    const response = await request.post(
+      `/api/staff/add?event_id=${currentId}`,
+      {
+        full_name: values.staffFullName,
+        registration_email: values.staffEmail,
+        is_manager: values.isManager || false
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${user.access}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    if (response.status === 201 || response.status === 200) {
+      message.success('Staff adicionado com sucesso!');
+      staffForm.resetFields();
+      await fetchStaffs();
+    } else {
+      message.error('Erro ao adicionar staff.');
+    }
+  } catch (error) {
+    if (isAxiosError(error)) {
+      const { data } = error.response || {};
+      const errorMessage = data?.errors || 'Erro desconhecido.';
+      message.error(errorMessage);
+    } else {
+      message.error('Erro ao adicionar staff.');
+    }
+    console.error('Erro ao adicionar staff:', error);
+  } finally {
+    setAddStaffLoading(false);
+  }
+};
 
   // Função para excluir jogadores
   const handleDeletePlayer = (playerId: number) => {
@@ -1046,6 +1089,61 @@ const ParticipantsManagementComponent = forwardRef<ParticipantsManagementRefType
                     )}
                   </div>
                 )}
+              </Card>
+
+              {/* Formulário para adicionar staff individualmente */}
+              <Card 
+                title="Adicionar Staff Individual"
+                bordered={false}
+                size="small"
+              >
+                <Form 
+                  form={staffForm} 
+                  onFinish={handleAddStaffSubmit} 
+                  layout="vertical"
+                  requiredMark={false}
+                >
+                  <Form.Item
+                    name="staffFullName"
+                    label="Nome completo"
+                    rules={[{ required: true, message: 'Por favor, informe o nome completo!' }]}
+                  >
+                    <Input placeholder="Nome completo" />
+                  </Form.Item>
+                  <Form.Item
+                    name="staffSocialName"
+                    label="Nome social"
+                  >
+                    <Input placeholder="Nome social (opcional)" />
+                  </Form.Item>
+                  <Form.Item
+                    name="staffEmail"
+                    label="Email de inscrição"
+                    rules={[
+                      { required: true, message: 'Por favor, informe o email!' },
+                      { type: 'email', message: 'Por favor, informe um email válido!' }
+                    ]}
+                  >
+                    <Input placeholder="exemplo@email.com" />
+                  </Form.Item>
+                  <Form.Item
+                    name="isManager"
+                    valuePropName="checked"
+                  >
+                    <Checkbox>O novo staff é gerente?</Checkbox>
+                  </Form.Item>
+                  <Form.Item>
+                    <Button 
+                      type="primary" 
+                      htmlType="submit" 
+                      loading={addStaffLoading}
+                      icon={<UserAddOutlined />}
+                      style={{ width: '100%' }}
+                    >
+                      Adicionar Staff
+                    </Button>
+                  </Form.Item>
+                </Form>
               </Card>
             </div>
           </TabPane>
