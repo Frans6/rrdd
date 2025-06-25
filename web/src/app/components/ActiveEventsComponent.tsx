@@ -4,6 +4,7 @@ import { PlayCircleOutlined, ReloadOutlined, LoginOutlined } from '@ant-design/i
 import { UserContext } from '../contexts/UserContext';
 import { EventContext } from '../contexts/EventContext';
 import { useRouter } from 'next/navigation';
+import request from "@/app/utils/request";
 
 const { Text, Paragraph } = Typography;
 const { useBreakpoint } = Grid;
@@ -25,7 +26,6 @@ const ActiveEventsComponent = () => {
 
   useEffect(() => {
     if (user.all_events) {
-      console.log('user.all_events:', user.all_events); // <-- Adicionado para debug
       // Filtrar apenas eventos ativos do usuário
       const active = user.all_events
         .filter(event => event.event && event.event.active === true)
@@ -39,7 +39,7 @@ const ActiveEventsComponent = () => {
           originalRole: event.role, // Mantém o papel original sem tradução
           originalEvent: event // Mantém a referência ao evento original
         }));
-      console.log('activeEvents filtrados:', active); // <-- Adicionado para debug
+      
       setActiveEvents(active);
     }
   }, [user.all_events]);
@@ -79,14 +79,45 @@ const ActiveEventsComponent = () => {
     }
   }, [shouldNavigate, currentEvent, router]);
 
-  // Função de atualização modificada para usar window.location.reload()
-  const handleRefresh = () => {
+  // Função de atualização modificada para buscar novamente os eventos do usuário
+  const handleRefresh = async () => {
+    if (!user?.access) {
+      // Exiba um aviso ou retorne cedo
+      setLoading(false);
+      return;
+    }
     setLoading(true);
-    // Adicionando um pequeno delay antes de recarregar para mostrar o loading
-    setTimeout(() => {
-      window.location.reload();
-    }, 300);
+    try {
+      const response = await request.get("/api/event/", {
+        headers: {
+          Authorization: `Bearer ${user.access}`
+        }
+      });
+      const events = response.data || [];
+      const active = events
+        .filter((event: any) => event.event && event.event.active === true)
+        .map((event: any) => ({
+          id: event.event?.id,
+          name: event.event?.name,
+          status: "Ativo",
+          role: event.role === 'player' ? 'Participante' : 
+                event.role === 'staff' ? 'Staff' : 
+                event.role === 'owner' || event.role === 'admin' || event.role === 'manager' ? 'Organizador' : 'Desconhecido',
+          originalRole: event.role,
+          originalEvent: event
+        }));
+      setActiveEvents(active);
+    } catch (err) {
+      // Trate o erro conforme necessário
+    }
+    setLoading(false);
   };
+
+  // Chama handleRefresh ao montar o componente para buscar eventos ativos automaticamente
+  useEffect(() => {
+    handleRefresh();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const getStatusColor = (role: string) => {
     switch(role) {
